@@ -18,7 +18,6 @@ app.post("/", (req, res) => {
 
 app.get("/", (req, res) => {
   console.log("inquery");
-
   return res.send("OK");
 });
 
