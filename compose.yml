@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  mysqldb:
+    container_name: mysql
+    image: "mysql"
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    networks:
+      - pep-test  
+    environment:
+      MYSQL_DATABASE: pep-test
+      MYSQL_USER: pep-user
+      MYSQL_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: 1234
+    volumes:
+      - /data/mysql
+networks:
+  pep-test:

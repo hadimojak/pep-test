@@ -1,10 +1,9 @@
-const {consola} = require("consola");
+const { consola } = require("consola");
 const express = require("express");
 const Port = 3000;
 const app = express();
 const server = require("http").createServer(app);
-
-const fs = require("fs");
+const { Sequelize, DataTypes, Model, Op } = require("sequelize");
 
 const bodyParser = require("body-parser");
 
@@ -21,6 +20,61 @@ app.get("/", (req, res) => {
   return res.send("OK");
 });
 
-server.listen(Port, (req, res) => {
-    consola.success({ message: `server is starting on http://localhost:${Port}/graphql`, badge: true });
-});
+const connection = {
+  host: "localhost",
+  dialect: "mysql",
+  dialectOptions: {
+    supportBigNumbers: true,
+    bigNumberStrings: true,
+    dateStrings: true,
+    typeCast: true,
+  },
+};
+
+const sequelize = new Sequelize("pep-test", "root", "1234", connection);
+
+//define model
+const Square = sequelize.define(
+  "Square",
+  {
+    x: {
+      type: DataTypes.NUMBER,
+      allowNull: false,
+    },
+    y: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    width: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    height: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+
+    createdAt: Sequelize.DATE,
+    updatedAt: Sequelize.DATE,
+  },
+  {
+    sequelize: sequelize,
+    freezeTableName: true,
+    modelName: "square",
+  }
+);
+
+//connect to db
+sequelize
+  .sync({ alter: false })
+  .then(() => {
+    console.log("db connected");
+  })
+  .then(() => {
+    server.listen(Port, () => {
+      consola.success({ message: `server is starting on http://localhost:${Port}/graphql`, badge: true });
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
